@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="page_title">Whisper Wall — Ephemeral Anonymous Confessions</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Lora:ital,wght@0,500;0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-cork">
+  <!-- Background Noise & Pattern -->
+  <div class="board-texture"></div>
+
+  <!-- Header & Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <span class="pin-icon">📌</span>
+          <div class="logo-text">
+            <h1 data-i18n="brand_title">Whisper Wall</h1>
+            <p class="tagline" data-i18n="brand_tagline">Ephemeral Anonymous Confessions Vanishing in 12–24 Hours</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action & Global Info -->
+      <div class="header-actions">
+        <!-- Language Switcher Dropdown -->
+        <div class="lang-selector-box" title="Change Language / Ganti Bahasa">
+          <span class="lang-globe-icon">🌐</span>
+          <select id="langSelect" class="lang-select" aria-label="Change Language">
+            <option value="en">English (US)</option>
+            <option value="id">Bahasa Indonesia</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="ja">日本語</option>
+            <option value="zh">中文 (简体)</option>
+            <option value="ar">العربية</option>
+          </select>
+        </div>
+
+        <div class="live-pill" id="globalStatusPill" title="Live Board Status">
+          <span class="status-dot"></span>
+          <span id="activeNotesCount">0 Active Notes</span>
+        </div>
+
+        <button id="themeToggleBtn" class="btn-ghost" title="Toggle Board Theme">
+          <span id="themeIcon">🪵</span>
+          <span id="themeLabel" class="desktop-only-text" data-i18n="theme_cork">Cork Board</span>
+        </button>
+
+        <button id="openModalBtn" class="btn-primary">
+          <span class="btn-icon">✍️</span>
+          <span class="btn-text" data-i18n="btn_post_confession">Post Confession</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Ephemeral Notice Banner -->
+    <div class="ephemeral-banner">
+      <div class="banner-inner">
+        <span class="banner-icon">⏳</span>
+        <span class="banner-text" id="bannerNoticeText">
+          All messages on this board are <strong>100% anonymous</strong> and will <strong>automatically disappear</strong> in 12–24 hours without a trace.
+        </span>
+        <span class="banner-timer" id="nextExpiringTimer">
+          <span id="nextExpiringLabel">Next cleanup:</span> <strong id="nextExpiringVal">Loading...</strong>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filter & Search Toolbar -->
+  <main class="main-content">
+    <div class="toolbar-section">
+      <!-- Category Tabs -->
+      <div class="category-tabs" id="categoryTabs">
+        <button class="tab-btn active" data-category="all" data-i18n="cat_all">✨ All</button>
+        <button class="tab-btn" data-category="curhat" data-i18n="cat_curhat">💔 Vent & Confess</button>
+        <button class="tab-btn" data-category="asmara" data-i18n="cat_asmara">💕 Romance</button>
+        <button class="tab-btn" data-category="karir" data-i18n="cat_karir">💼 Career & Study</button>
+        <button class="tab-btn" data-category="motivasi" data-i18n="cat_motivasi">🌱 Uplift & Hope</button>
+        <button class="tab-btn" data-category="filosofis" data-i18n="cat_filosofis">🤫 Secret & Thoughts</button>
+        <button class="tab-btn" data-category="random" data-i18n="cat_random">☕ Random Musings</button>
+      </div>
+
+      <!-- Search & Sort Controls -->
+      <div class="controls-row">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Search through whispers..." autocomplete="off" data-i18n-placeholder="search_placeholder">
+          <button id="clearSearchBtn" class="clear-btn" style="display: none;">✕</button>
+        </div>
+
+        <div class="sort-box">
+          <label for="sortSelect" data-i18n="sort_label">Sort by:</label>
+          <select id="sortSelect">
+            <option value="newest" data-i18n="sort_newest">Newest Posted</option>
+            <option value="popular" data-i18n="sort_popular">Most Reactions</option>
+            <option value="expiring_soon" data-i18n="sort_expiring_soon">⏳ Expiring Soon</option>
+            <option value="oldest" data-i18n="sort_oldest">Oldest First</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Notes Board Grid -->
+    <div class="board-wrapper">
+      <div class="board-grid" id="notesBoard">
+        <!-- Sticky notes will be injected here dynamically -->
+      </div>
+
+      <!-- Loading State -->
+      <div class="board-loading" id="boardLoading" style="display: none;">
+        <div class="spinner"></div>
+        <p data-i18n="loading_board">Gathering whispers on the board...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div class="board-empty" id="boardEmpty" style="display: none;">
+        <div class="empty-graphic">📜</div>
+        <h3 data-i18n="empty_title">The Board is Quiet</h3>
+        <p data-i18n="empty_desc">No confessions in this category yet, or previous messages have naturally vanished.</p>
+        <button class="btn-primary" onclick="document.getElementById('openModalBtn').click()" data-i18n="btn_first_post">
+          Be the First to Post a Message
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal: Tulis Curhat Baru -->
+  <div class="modal-backdrop" id="writeModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 data-i18n="modal_title">Write Anonymous Note</h2>
+          <p data-i18n="modal_subtitle">Speak your heart. No names, no judgment.</p>
+        </div>
+        <button class="modal-close-btn" id="closeModalBtn" aria-label="Close">✕</button>
+      </div>
+
+      <form id="writeForm" class="modal-body">
+        <!-- Live Preview Sticky Note -->
+        <div class="preview-section">
+          <span class="section-label" data-i18n="preview_label">Your Paper Preview:</span>
+          <div class="sticky-preview" id="stickyPreview">
+            <div class="preview-tape"></div>
+            <div class="preview-category" id="previewCategoryBadge">☕ Random Musings</div>
+            <div class="preview-text" id="previewText">Start typing your confession below...</div>
+            <div class="preview-footer">
+              <span class="preview-timer" id="previewTimerBadge">⏳ Lasts 24 Hours</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Textarea -->
+        <div class="form-group">
+          <div class="label-row">
+            <label for="noteContent" data-i18n="input_label">Message / Confession / Quote</label>
+            <span class="char-count" id="charCount">0 / 400</span>
+          </div>
+          <textarea 
+            id="noteContent" 
+            placeholder="Write whatever weighs on your mind, your favorite quote, or a secret you've never told anyone..."
+            data-i18n-placeholder="input_placeholder"
+            maxlength="400"
+            rows="4"
+            required
+          ></textarea>
+        </div>
+
+        <!-- Category Picker -->
+        <div class="form-group">
+          <label data-i18n="mood_category_label">Mood Category</label>
+          <div class="mood-chips">
+            <label class="mood-chip">
+              <input type="radio" name="category" value="curhat" checked>
+              <span data-i18n="cat_curhat">💔 Vent & Confess</span>
+            </label>
+            <label class="mood-chip">
+              <input type="radio" name="category" value="asmara">
+              <span data-i18n="cat_asmara">💕 Romance</span>
+            </label>
+            <label class="mood-chip">
+              <input type="radio" name="category" value="karir">
+              <span data-i18n="cat_karir">💼 Career & Study</span>
+            </label>
+            <label class="mood-chip">
+              <input type="radio" name="category" value="motivasi">
+              <span data-i18n="cat_motivasi">🌱 Uplift & Hope</span>
+            </label>
+            <label class="mood-chip">
+              <input type="radio" name="category" value="filosofis">
+              <span data-i18n="cat_filosofis">🤫 Secret & Thoughts</span>
+            </label>
+            <label class="mood-chip">
+              <input type="radio" name="category" value="random">
+              <span data-i18n="cat_random">☕ Random Musings</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Color & Typography Options -->
+        <div class="form-row">
+          <!-- Color Picker -->
+          <div class="form-group flex-1">
+            <label data-i18n="paper_color_label">Sticky Paper Color</label>
+            <div class="color-picker" id="colorPicker">
+              <button type="button" class="color-btn active" data-color="#fef08a" style="background: #fef08a;" title="Classic Yellow"></button>
+              <button type="button" class="color-btn" data-color="#fbcfe8" style="background: #fbcfe8;" title="Pastel Pink"></button>
+              <button type="button" class="color-btn" data-color="#bae6fd" style="background: #bae6fd;" title="Sky Blue"></button>
+              <button type="button" class="color-btn" data-color="#bbf7d0" style="background: #bbf7d0;" title="Mint Green"></button>
+              <button type="button" class="color-btn" data-color="#e9d5ff" style="background: #e9d5ff;" title="Lavender Purple"></button>
+              <button type="button" class="color-btn" data-color="#fed7aa" style="background: #fed7aa;" title="Warm Orange"></button>
+              <button type="button" class="color-btn dark-color" data-color="#1e293b" style="background: #1e293b;" title="Midnight Dark"></button>
+            </div>
+          </div>
+
+          <!-- Font Style -->
+          <div class="form-group flex-1">
+            <label for="fontSelect" data-i18n="font_style_label">Writing Style</label>
+            <select id="fontSelect">
+              <option value="handwriting" data-i18n="font_handwriting">✍️ Casual Handwriting</option>
+              <option value="serif" data-i18n="font_serif">📖 Poetic Novel (Serif)</option>
+              <option value="monospace" data-i18n="font_monospace">📟 Retro Typewriter (Mono)</option>
+              <option value="modern" data-i18n="font_modern">📱 Clean Modern (Sans)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Duration Picker (12 vs 24 jam) -->
+        <div class="form-group">
+          <label data-i18n="duration_label">How long should this message stay before self-destructing?</label>
+          <div class="duration-options">
+            <label class="duration-card">
+              <input type="radio" name="duration" value="12">
+              <div class="duration-box">
+                <span class="dur-icon">⚡</span>
+                <span class="dur-title" data-i18n="duration_12h">12 Hours</span>
+                <span class="dur-desc" data-i18n="duration_12h_desc">Brief & quick to vanish</span>
+              </div>
+            </label>
+            <label class="duration-card">
+              <input type="radio" name="duration" value="24" checked>
+              <div class="duration-box">
+                <span class="dur-icon">🌙</span>
+                <span class="dur-title" data-i18n="duration_24h">24 Hours</span>
+                <span class="dur-desc" data-i18n="duration_24h_desc">Full day & night</span>
+              </div>
+            </label>
+            <label class="duration-card demo-option" title="Quick testing option">
+              <input type="radio" name="duration" value="0.0167">
+              <div class="duration-box">
+                <span class="dur-icon">🧪</span>
+                <span class="dur-title" data-i18n="duration_demo">1 Minute</span>
+                <span class="dur-desc" data-i18n="duration_demo_desc">Demo vanish test</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-ghost" id="cancelModalBtn" data-i18n="btn_cancel">Cancel</button>
+          <button type="submit" class="btn-primary" id="submitNoteBtn">
+            <span data-i18n="btn_submit">Pin to Board</span>
+            <span class="btn-icon">📌</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Floating Action Button for Mobile -->
+  <button class="mobile-fab-btn" id="mobileFabBtn" title="Post New Confession" aria-label="Post New Confession">
+    <span class="fab-icon">✍️</span>
+    <span class="fab-label" data-i18n="fab_label">Confess</span>
+  </button>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Hidden Canvas for card export -->
+  <canvas id="exportCanvas" style="display: none;"></canvas>
+
+  <!-- Audio Tone Synthesizer & Logic -->
+  <script src="app.js"></script>
+</body>
+</html>

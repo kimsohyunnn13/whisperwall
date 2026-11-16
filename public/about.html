@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us — Whisper Wall</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .legal-page-container {
+      max-width: 860px;
+      margin: 2rem auto;
+      padding: 2.5rem;
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      line-height: 1.8;
+      color: #334155;
+    }
+    body.theme-dark .legal-page-container {
+      background: #1e293b;
+      border-color: rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+    }
+    .legal-header {
+      border-bottom: 2px dashed rgba(0, 0, 0, 0.1);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    body.theme-dark .legal-header {
+      border-bottom-color: rgba(255, 255, 255, 0.12);
+    }
+    .legal-header h1 {
+      font-size: 2rem;
+      color: #0f172a;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+    body.theme-dark .legal-header h1 {
+      color: #f8fafc;
+    }
+    .legal-meta {
+      font-size: 0.88rem;
+      color: #64748b;
+    }
+    body.theme-dark .legal-meta {
+      color: #94a3b8;
+    }
+    .legal-section {
+      margin-bottom: 2rem;
+    }
+    .legal-section h2 {
+      font-size: 1.25rem;
+      color: #0f172a;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+    body.theme-dark .legal-section h2 {
+      color: #f1f5f9;
+    }
+    .legal-section p, .legal-section ul {
+      margin-bottom: 1rem;
+    }
+    .back-nav {
+      margin-bottom: 1.5rem;
+    }
+    .back-nav a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+    .back-nav a:hover {
+      text-decoration: underline;
+    }
+    .about-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+    .about-card {
+      padding: 1.5rem;
+      background: #f8fafc;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: var(--radius-md);
+    }
+    body.theme-dark .about-card {
+      background: rgba(15, 23, 42, 0.5);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+    .about-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    body.theme-dark .about-card h3 {
+      color: #f8fafc;
+    }
+  </style>
+</head>
+<body class="theme-cork">
+  <div style="padding: 1.5rem 1rem;">
+    <div class="legal-page-container">
+      <div class="back-nav">
+        <a href="/">← Back to Whisper Wall</a>
+      </div>
+
+      <header class="legal-header">
+        <h1>About Whisper Wall</h1>
+        <p class="legal-meta">A Safe Space to Share Thoughts Without Leaving a Trace</p>
+      </header>
+
+      <div class="legal-section">
+        <h2>Our Philosophy</h2>
+        <p>In a digital world where virtually every footprint is permanently recorded and social judgments occur instantly, we often yearn for a quiet sanctuary to unburden our thoughts without worrying about past archives or personal reputations.</p>
+        <p><strong>Whisper Wall</strong> was born from a simple concept: a virtual corkboard where anyone can post an anonymous sticky note containing their heartfelt thoughts, secret reflections, silent struggles, hopes, or words of encouragement. After 12 to 24 hours, the note naturally fades away into nothingness — like whispers carried away by the wind.</p>
+      </div>
+
+      <div class="legal-section">
+        <h2>Core Principles</h2>
+        <div class="about-cards">
+          <div class="about-card">
+            <h3>🔒 100% Anonymous</h3>
+            <p>No user registration, no profiles, and no tracking. All voices are heard equally.</p>
+          </div>
+          <div class="about-card">
+            <h3>⏳ Truly Ephemeral</h3>
+            <p>Every message has a definite lifespan. Our system automatically deletes expired whispers forever.</p>
+          </div>
+          <div class="about-card">
+            <h3>🌱 Safe Community</h3>
+            <p>Protected with offensive word filters, anti-spam rate limiting, and community reporting mechanisms.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

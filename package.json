@@ -1,0 +1,13 @@
+{
+  "name": "papan-curhat-anonim",
+  "version": "1.0.0",
+  "description": "Papan Curhat / Teks Anonim Sementara yang musnah setelah 12-24 jam",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["curhat", "anonim", "papan-pesan", "ephemeral", "sticky-notes"],
+  "author": "",
+  "license": "MIT"
+}

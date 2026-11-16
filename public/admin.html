@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dasbor Admin — Bisik Sementara</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <!-- ==================== LOGIN SCREEN ==================== -->
+  <div class="login-wrapper" id="loginScreen">
+    <div class="login-card">
+      <div class="login-icon">🛡️</div>
+      <h1>Portal Admin</h1>
+      <p>Akses khusus pengelola Papan Curhat Anonim</p>
+
+      <form id="loginForm" class="login-form">
+        <div class="input-group">
+          <label for="adminPinInput">Masukkan PIN Admin</label>
+          <input 
+            type="password" 
+            id="adminPinInput" 
+            placeholder="PIN Default: admin123" 
+            autocomplete="current-password" 
+            required 
+            autofocus
+          />
+        </div>
+        <div class="login-error" id="loginError" style="display: none;"></div>
+        <button type="submit" class="btn-primary-admin" id="loginBtn">
+          <span>Masuk ke Dasbor</span>
+        </button>
+      </form>
+      
+      <div class="login-footer">
+        <a href="/" class="back-link">← Kembali ke Papan Publik</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== DASHBOARD SCREEN ==================== -->
+  <div class="dashboard-wrapper" id="dashboardScreen" style="display: none;">
+    <!-- Top Bar -->
+    <header class="admin-header">
+      <div class="admin-brand">
+        <span class="shield-badge">🛡️ ADMIN</span>
+        <div class="brand-titles">
+          <h2>Bisik Sementara</h2>
+          <span class="sub-portal">Pusat Moderasi &amp; Kendali Papan</span>
+        </div>
+      </div>
+
+      <div class="header-nav-actions">
+        <span class="status-pill active" id="adminBoardStatusBadge">🟢 Papan Aktif</span>
+        <a href="/" target="_blank" class="btn-nav">
+          <span>🌐 Lihat Papan Publik</span>
+        </a>
+        <button id="logoutBtn" class="btn-nav danger">
+          <span>🚪 Keluar</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <!-- Quick Action Bar -->
+      <div class="action-bar-card">
+        <div class="action-bar-info">
+          <h3>Panel Kontrol &amp; Aksi Cepat</h3>
+          <p>Kelola konten, sematkan pengumuman resmi, atau atur keamanan papan.</p>
+        </div>
+        <div class="action-buttons">
+          <button class="btn-action-primary" id="openPinModalBtn">
+            <span>📢 Sematkan Pengumuman</span>
+          </button>
+          <button class="btn-action-secondary" id="openChangePinModalBtn">
+            <span>🔑 Ubah PIN</span>
+          </button>
+          <button class="btn-action-freeze" id="toggleFreezeBtn" title="Kunci papan agar pengunjung tidak bisa menempel pesan baru">
+            <span>❄️ Bekukan Papan</span>
+          </button>
+          <button class="btn-action-danger" id="openResetBoardModalBtn">
+            <span>🚨 Kosongkan Seluruh Papan</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Metric Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon-wrap bg-blue">📝</div>
+          <div class="stat-details">
+            <span class="stat-title">Pesan Aktif di Papan</span>
+            <strong class="stat-value" id="statActiveNotes">0</strong>
+            <span class="stat-desc">Sedang menempel di publik</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrap bg-purple">📢</div>
+          <div class="stat-details">
+            <span class="stat-title">Pengumuman Disematkan</span>
+            <strong class="stat-value" id="statPinnedNotes">0</strong>
+            <span class="stat-desc">Muncul di posisi teratas</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrap bg-red">🚩</div>
+          <div class="stat-details">
+            <span class="stat-title">Pesan Dilaporkan</span>
+            <strong class="stat-value" id="statReportedNotes">0</strong>
+            <span class="stat-desc">Perlu ditinjau admin</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrap bg-amber">🛡️</div>
+          <div class="stat-details">
+            <span class="stat-title">Filter Kata Terlarang</span>
+            <strong class="stat-value" id="statBlacklistCount">0</strong>
+            <span class="stat-desc">Kata diblokir otomatis</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrap bg-red">💥</div>
+          <div class="stat-details">
+            <span class="stat-title">Total Pesan Musnah</span>
+            <strong class="stat-value" id="statTotalPurged">0</strong>
+            <span class="stat-desc">Terhapus oleh batas waktu</span>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrap bg-green">❤️</div>
+          <div class="stat-details">
+            <span class="stat-title">Total Interaksi / Reaksi</span>
+            <strong class="stat-value" id="statTotalReactions">0</strong>
+            <span class="stat-desc">Dukungan dari pembaca</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reported Notes Section -->
+      <div class="moderation-card reported-card" id="reportedSection">
+        <div class="moderation-header">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <h3>🚩 Pesan Dilaporkan Pengunjung</h3>
+              <span class="report-badge-counter" id="reportedCounterBadge">0 Laporan</span>
+            </div>
+            <p>Pesan-pesan yang dilaporkan oleh pengunjung karena dinilai tidak pantas, menyinggung, atau spam.</p>
+          </div>
+
+          <div class="moderation-controls">
+            <button class="btn-refresh" id="refreshReportsBtn" title="Segarkan Laporan">
+              <span>🔄 Segarkan Laporan</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Table of Reported Notes -->
+        <div class="table-responsive">
+          <table class="notes-table">
+            <thead>
+              <tr>
+                <th width="40">Warna</th>
+                <th>Isi Pesan Dilaporkan</th>
+                <th width="120">Kategori</th>
+                <th width="110">Jml Laporan</th>
+                <th width="180">Alasan Pelapor</th>
+                <th width="140" style="text-align: right;">Aksi Tindakan</th>
+              </tr>
+            </thead>
+            <tbody id="reportsTableBody">
+              <tr>
+                <td colspan="6" class="table-loading">Memuat daftar laporan...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Pagination Laporan -->
+        <div class="pagination-bar" id="reportsPagination" style="display:none;">
+          <div class="pagination-info" id="reportsPaginationInfo"></div>
+          <div class="pagination-controls">
+            <button class="page-btn" id="reportsPrevBtn" disabled>‹ Sebelumnya</button>
+            <div class="page-numbers" id="reportsPageNumbers"></div>
+            <button class="page-btn" id="reportsNextBtn">Berikutnya ›</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Blacklist Filter Section -->
+      <div class="moderation-card blacklist-card" id="blacklistSection">
+        <div class="moderation-header">
+          <div>
+            <h3>🛡️ Filter Kata Kasar &amp; Terlarang Otomatis</h3>
+            <p>Setiap curhatan baru yang mengandung kata-kata di bawah ini akan otomatis ditolak oleh sistem.</p>
+          </div>
+        </div>
+
+        <div class="blacklist-input-wrapper">
+          <form id="addBlacklistForm" class="blacklist-form">
+            <input 
+              type="text" 
+              id="newBlacklistInput" 
+              placeholder="Ketik kata yang ingin diblokir (contoh: kasar, penipu)..." 
+              required 
+              maxlength="50"
+            />
+            <button type="submit" class="btn-action-primary" id="addBlacklistBtn">
+              <span>+ Tambahkan ke Filter</span>
+            </button>
+          </form>
+          <span class="blacklist-hint">💡 Kata tidak sensitif huruf besar/kecil (case-insensitive). Klik tombol ✕ pada chip untuk menghapus kata.</span>
+        </div>
+
+        <div class="blacklist-chips-box" id="blacklistContainer">
+          <div class="table-loading">Memuat filter kata...</div>
+        </div>
+      </div>
+
+      <!-- Settings Section: Batas Huruf & Anti-Spam -->
+      <div class="moderation-card settings-card" id="settingsSection">
+        <div class="moderation-header">
+          <div>
+            <h3>⚙️ Pengaturan Batas Huruf &amp; Anti-Spam</h3>
+            <p>Sesuaikan batas panjang karakter curhatan dan interval jeda waktu untuk melindungi papan dari serbuan spam.</p>
+          </div>
+        </div>
+
+        <form id="boardSettingsForm" class="board-settings-form">
+          <div class="settings-form-grid">
+            <div class="setting-field">
+              <label for="maxCharLimitInput">
+                <span class="field-title">📏 Batas Maksimal Huruf (Karakter)</span>
+                <span class="field-subtitle">Panjang maksimal isi curhatan per lembar sticky note</span>
+              </label>
+              <div class="input-unit-wrap">
+                <input 
+                  type="number" 
+                  id="maxCharLimitInput" 
+                  min="50" 
+                  max="2000" 
+                  step="10" 
+                  value="400" 
+                  required 
+                />
+                <span class="unit-label">Karakter</span>
+              </div>
+              <small class="field-hint">Rekomendasi: 200–500 karakter. Maksimal 2.000 karakter.</small>
+            </div>
+
+            <div class="setting-field">
+              <label for="spamCooldownInput">
+                <span class="field-title">⏱️ Jeda Waktu Anti-Spam (Detik)</span>
+                <span class="field-subtitle">Waktu tunggu pengunjung sebelum boleh menempel pesan lagi</span>
+              </label>
+              <div class="input-unit-wrap">
+                <input 
+                  type="number" 
+                  id="spamCooldownInput" 
+                  min="0" 
+                  max="3600" 
+                  step="5" 
+                  value="60" 
+                  required 
+                />
+                <span class="unit-label">Detik</span>
+              </div>
+              <small class="field-hint">Isi 0 untuk menonaktifkan proteksi jeda waktu. Rekomendasi: 30–120 detik.</small>
+            </div>
+          </div>
+
+          <div class="settings-footer-actions">
+            <div class="freeze-quick-info">
+              <span class="info-label">Status Mode Papan:</span>
+              <strong id="freezeStatusText" style="color: #10b981;">🟢 Aktif (Bisa Menempel Curhat)</strong>
+            </div>
+            <button type="submit" class="btn-action-primary" id="saveSettingsBtn">
+              <span>💾 Simpan Pengaturan</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Moderation Section -->
+      <div class="moderation-card">
+        <div class="moderation-header">
+          <div>
+            <h3>Moderasi Pesan Aktif</h3>
+            <p>Hapus pesan yang tidak pantas, mengandung SARA, atau spam tanpa menunggu 12–24 jam.</p>
+          </div>
+
+          <div class="moderation-controls">
+            <div class="filter-box">
+              <input type="text" id="adminSearchInput" placeholder="Cari isi pesan..." />
+            </div>
+            <button class="btn-refresh" id="refreshBtn" title="Segarkan Data">
+              <span>🔄 Segarkan</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Table of Notes -->
+        <div class="table-responsive">
+          <table class="notes-table">
+            <thead>
+              <tr>
+                <th width="40">Warna</th>
+                <th>Isi Pesan Curhat</th>
+                <th width="130">Kategori</th>
+                <th width="110">Sisa Waktu</th>
+                <th width="110">Reaksi</th>
+                <th width="120">Ditempel</th>
+                <th width="90" style="text-align: right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="notesTableBody">
+              <tr>
+                <td colspan="7" class="table-loading">Memuat daftar pesan...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Pagination Moderasi -->
+        <div class="pagination-bar" id="notesPagination" style="display:none;">
+          <div class="pagination-info" id="notesPaginationInfo"></div>
+          <div class="pagination-controls">
+            <button class="page-btn" id="notesPrevBtn" disabled>‹ Sebelumnya</button>
+            <div class="page-numbers" id="notesPageNumbers"></div>
+            <button class="page-btn" id="notesNextBtn">Berikutnya ›</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin Logs Section -->
+      <div class="logs-card">
+        <h3>Riwayat Tindakan Admin Terakhir</h3>
+        <ul class="logs-list" id="logsList">
+          <li class="log-empty">Belum ada aktivitas admin yang tercatat.</li>
+        </ul>
+      </div>
+    </main>
+  </div>
+
+  <!-- ==================== MODAL: SEMATKAN PENGUMUMAN ==================== -->
+  <div class="admin-modal-backdrop" id="pinModal">
+    <div class="admin-modal-box">
+      <div class="modal-top">
+        <h3>📢 Sematkan Pengumuman Resmi</h3>
+        <button class="btn-close-modal" onclick="closeAdminModal('pinModal')">✕</button>
+      </div>
+      <form id="pinForm" class="modal-form">
+        <p class="modal-intro">Pengumuman resmi akan ditandai dengan badge khusus dan selalu berada di posisi paling atas papan publik.</p>
+        
+        <div class="input-group">
+          <label for="announcementContent">Isi Pengumuman</label>
+          <textarea id="announcementContent" rows="4" placeholder="Contoh: Halo kawan-kawan! Mohon jaga ketertiban papan dan jangan mencantumkan nomor HP atau informasi pribadi ya..." required></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="closeAdminModal('pinModal')">Batal</button>
+          <button type="submit" class="btn-primary-admin">Sematkan Sekarang</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: UBAH PIN ==================== -->
+  <div class="admin-modal-backdrop" id="changePinModal">
+    <div class="admin-modal-box">
+      <div class="modal-top">
+        <h3>🔑 Ubah PIN Admin</h3>
+        <button class="btn-close-modal" onclick="closeAdminModal('changePinModal')">✕</button>
+      </div>
+      <form id="changePinForm" class="modal-form">
+        <p class="modal-intro">Pastikan PIN baru mudah Anda ingat. Minimal 4 karakter.</p>
+
+        <div class="input-group">
+          <label for="newPinInput">PIN Baru</label>
+          <input type="password" id="newPinInput" placeholder="Masukkan PIN baru..." required minlength="4" />
+        </div>
+
+        <div class="input-group">
+          <label for="confirmPinInput">Konfirmasi PIN Baru</label>
+          <input type="password" id="confirmPinInput" placeholder="Ketik ulang PIN baru..." required minlength="4" />
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="closeAdminModal('changePinModal')">Batal</button>
+          <button type="submit" class="btn-primary-admin">Simpan PIN Baru</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: KONFIRMASI RESET TOTAL ==================== -->
+  <div class="admin-modal-backdrop" id="resetModal">
+    <div class="admin-modal-box danger-border">
+      <div class="modal-top">
+        <h3 style="color: #ef4444;">🚨 Konfirmasi Reset Papan Total</h3>
+        <button class="btn-close-modal" onclick="closeAdminModal('resetModal')">✕</button>
+      </div>
+      <div class="modal-form">
+        <p class="danger-warning">
+          <strong>PERHATIAN!</strong> Tindakan ini akan <strong>menghapus seluruh pesan</strong> yang sedang menempel di papan saat ini seketika. Tindakan ini tidak dapat dibatalkan!
+        </p>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="closeAdminModal('resetModal')">Batal</button>
+          <button type="button" class="btn-danger-confirm" id="confirmResetBtn">Ya, Bersihkan Seluruh Papan!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="adminToastContainer"></div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
